@@ -89,8 +89,10 @@ def leapfrog_integrator(
     # do not forget to kick (i.e. apply the acceleration) your initial conditions for the velocity
 
     # instantiate lists in which positions and velocities are stored
-    positions_list = [positions_init] # include init position/velocity
-    velocities_list = [velocities_init]
+    positions_list = [] 
+    velocities_list = []
+    positions_list.append(positions_init.copy())
+    velocities_list.append(velocities_init.copy())
     
     # we first have to kick our velocities to v_i+1/2 from v_i 
     # for this we will use RK4 on a step size of 0.5*dt
@@ -109,7 +111,7 @@ def leapfrog_integrator(
     k4_x = velocities_init + 0.5*dt*k3_v
     
     # combine coefficients to compute velocities at t + 0.5*dt
-    velocities += (dt/6)*(k1_v + 2*k2_v + 2*k3_v + k4_v)  
+    velocities = velocities_init + (dt/6)*(k1_v + 2*k2_v + 2*k3_v + k4_v)  
     positions = positions_init # also define positions object
     
     for step in range(N_steps):
@@ -120,8 +122,8 @@ def leapfrog_integrator(
         velocities += dt*accelerations # kick
         
         # store positions
-        positions_list.append(positions)
-        velocities_list.append(velocities)
+        positions_list.append(positions.copy())
+        velocities_list.append(velocities_full_time_step.copy())
             
     positions_arr = np.array(positions_list)
     velocities_arr = np.array(velocities_list)
