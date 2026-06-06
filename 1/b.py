@@ -59,8 +59,8 @@ def leapfrog_integrator(
     positions_init: np.ndarray,
     velocities_init: np.ndarray,
     masses: np.ndarray,
-    dt: float,  # use 0.8 days
-    N_steps: int,  # 300 years / 0.8 days
+    dt: float,  
+    N_steps: int, 
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     The leapfrog integrator.
@@ -80,19 +80,50 @@ def leapfrog_integrator(
 
     Returns
     -------
-    positions : ndarray
+    positions_arr : ndarray
         Positions at all time steps, shape (N_steps + 1, N_bodies, 3).
-    velocities : ndarray
+    velocities_arr : ndarray
         Velocities at all time steps, shape (N_steps + 1, N_bodies, 3).
     """
     # use the equations for xi+1 and vi+1/2 provided in class for the leapfrog algorithm,
     # do not forget to kick (i.e. apply the acceleration) your initial conditions for the velocity
 
-    # for step in range(N_steps):
-    # drift
-    # acceleration
-    # kick
-    # store approximate velocity for the full time-step
-    return np.zeros((N_steps + 1, len(masses), 3)), np.zeros(
-        (N_steps + 1, len(masses), 3)
-    )
+    # instantiate lists in which positions and velocities are stored
+    positions_list = [positions_init] # include init position/velocity
+    velocities_list = [velocities_init]
+    
+    # we first have to kick our velocities to v_i+1/2 from v_i 
+    # for this we will use RK4 on a step size of 0.5*dt
+    
+    # first we compute all the k coefficients (with dt factored out)
+    k1_v = compute_accelerations(positions_init, masses)
+    k1_x = velocities_init
+    
+    k2_v = compute_accelerations(positions_init + 0.25*dt*k1_x, masses)
+    k2_x = velocities_init + 0.25*dt*k1_v
+    
+    k3_v = compute_accelerations(positions_init + 0.25*dt*k2_x, masses)
+    k3_x = velocities_init + 0.25*dt*k2_v
+    
+    k4_v = compute_accelerations(positions_init + 0.5*dt*k3_x, masses)
+    k4_x = velocities_init + 0.5*dt*k3_v
+    
+    # combine coefficients to compute velocities at t + 0.5*dt
+    velocities += (dt/6)*(k1_v + 2*k2_v + 2*k3_v + k4_v)  
+    positions = positions_init # also define positions object
+    
+    for step in range(N_steps):
+        positions += dt*velocities # drift
+        accelerations = compute_accelerations(positions, masses) #acceleration
+        # compute approximate velocity for the full time-step
+        velocities_full_time_step = velocities + 0.5*dt*accelerations
+        velocities += dt*accelerations # kick
+        
+        # store positions
+        positions_list.append(positions)
+        velocities_list.append(velocities)
+            
+    positions_arr = np.array(positions_list)
+    velocities_arr = np.array(velocities_list)
+    
+    return positions_arr, velocities_arr
