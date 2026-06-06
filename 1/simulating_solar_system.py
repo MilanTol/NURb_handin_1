@@ -5,12 +5,10 @@ import matplotlib.pyplot as plt
 
 from astropy.time import Time
 
-from matplotlib.animation import FuncAnimation
-from matplotlib import animation
 
 from a import get_initial_conditions, plot_initial_positions
-
-G = 4.0 * np.pi**2  # in AU^3 / (M_sun yr^2)
+from b import compute_accelerations, leapfrog_integrator
+from c import another_integrator
 
 bodies_with_masses = {
     "sun": 1.0,
@@ -26,112 +24,6 @@ bodies_with_masses = {
 # in M_sun
 
 # Question 1: Simulating the solar system
-
-
-def compute_accelerations(
-    positions: np.ndarray,
-    masses: np.ndarray,
-) -> np.ndarray:
-    """
-    Compute the accelerations using equation 1 in the hand in.
-
-    Parameters
-    ----------
-    positions : ndarray
-        Positions of all bodies, shape (N_bodies, 3)
-    masses : ndarray
-        Masses of all bodies, shape (N_bodies,)
-
-    Returns
-    -------
-    accelerations : ndarray
-        Accelerations of all bodies, shape (N_bodies, 3)
-    """
-
-    # for i in range(N_bodies):
-    #     for j in range(i + 1, N_bodies):
-    # TODO: implement this function using the description in the hand in
-    return np.zeros_like(positions)
-
-
-def leapfrog_integrator(
-    positions_init: np.ndarray,
-    velocities_init: np.ndarray,
-    masses: np.ndarray,
-    dt: float,  # use 0.8 days
-    N_steps: int,  # 300 years / 0.8 days
-) -> tuple[np.ndarray, np.ndarray]:
-    """
-    The leapfrog integrator.
-
-    Parameters
-    ----------
-    positions_init : ndarray
-        Initial positions, shape (N_bodies, 3).
-    velocities_init : ndarray
-        Initial velocities, shape (N_bodies, 3).
-    masses : ndarray
-        Masses of the bodies, shape (N_bodies,).
-    dt : float
-        Time step in years.
-    N_steps : int
-        Number of integration steps.
-
-    Returns
-    -------
-    positions : ndarray
-        Positions at all time steps, shape (N_steps + 1, N_bodies, 3).
-    velocities : ndarray
-        Velocities at all time steps, shape (N_steps + 1, N_bodies, 3).
-    """
-    # use the equations for xi+1 and vi+1/2 provided in class for the leapfrog algorithm,
-    # do not forget to kick (i.e. apply the acceleration) your initial conditions for the velocity
-
-    # for step in range(N_steps):
-    # drift
-    # acceleration
-    # kick
-    # store approximate velocity for the full time-step
-    return np.zeros((N_steps + 1, len(masses), 3)), np.zeros(
-        (N_steps + 1, len(masses), 3)
-    )
-
-
-def another_integrator(
-    positions_init: np.ndarray,
-    velocities_init: np.ndarray,
-    masses: np.ndarray,
-    dt: float,
-    N_steps: int,
-) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Compute the trajectories using another integration method.
-
-    Parameters
-    ----------
-    positions_init : ndarray
-        Initial positions, shape (N_bodies, 3)
-    velocities_init : ndarray
-        Initial velocities, shape (N_bodies, 3)
-    masses : ndarray
-        Masses of the bodies, shape (N_bodies,)
-    dt : float
-        Time step in years
-    N_steps : int
-        Number of integration steps
-
-    Returns
-    -------
-    positions : ndarray
-        Positions at all time steps, shape (N_steps + 1, N_bodies, 3)
-    velocities : ndarray
-        Velocities at all time steps, shape (N_steps + 1, N_bodies, 3)
-    """
-    # TODO: implement this function using a different integration method than leapfrog, e.g. RK4
-    return np.zeros((N_steps + 1, len(masses), 3)), np.zeros(
-        (N_steps + 1, len(masses), 3)
-    )
-
 
 ##### Plots #####
 
@@ -250,96 +142,6 @@ def plot_x_difference_vs_time(
     plt.savefig(os.path.join(output_dir, filename), dpi=300)
     plt.close(fig)
 
-
-def make_movie_with_matplotlib(
-    positions: np.ndarray,
-    body_names: list[str],
-    output_dir: str,
-    frame_interval: int,
-    movie_name: str = "solar_system_movie.mp4",
-    fps: int = 30,
-) -> str:
-    """
-    Create a Solar System animation directly with Matplotlib.
-
-    Parameters
-    ----------
-    positions : ndarray
-        Positions, shape (N_steps, N_bodies, 3)
-    body_names : list of str
-        Names of the bodies
-    output_dir : str
-        Directory where the movie is saved
-    frame_interval : int
-        Number of simulation steps between animation frames
-    movie_name : str, optional
-        Name of the output movie file
-    fps : int, optional
-        Frames per second of the output movie
-
-    Returns
-    -------
-    movie_path : str
-        Path to the created movie
-    """
-    os.makedirs(output_dir, exist_ok=True)
-    movie_path = os.path.join(output_dir, movie_name)
-
-    positions_plot = positions.copy()  # shape (N_steps, N_bodies, 3)
-    positions_plot = (
-        positions_plot - positions[:, 0, :][:, None, :]
-    )  # shift relative to the Sun
-
-    frame_steps = list(range(0, positions.shape[0], frame_interval))
-
-    fig, ax = plt.subplots()
-
-    scatters = []
-    for name in body_names:
-        scatter = ax.scatter([], [], label=name)
-        scatters.append(scatter)
-
-    ax.set(
-        xlabel="x [AU]",
-        ylabel="y [AU]",
-        title="Solar System movie",
-        aspect="equal",
-        xlim=(-35, 35),
-        ylim=(-35, 35),
-    )
-    ax.legend(fontsize=8)
-    plt.tight_layout()
-
-    def init():
-        for scatter in scatters:
-            scatter.set_offsets(np.empty((0, 2)))
-        return scatters
-
-    def update(frame_idx):
-        step = frame_steps[frame_idx]
-
-        for i, scatter in enumerate(scatters):
-            x = positions_plot[step, i, 0]
-            y = positions_plot[step, i, 1]
-            scatter.set_offsets(np.array([[x, y]]))
-
-        ax.set_title(f"Solar System, step = {step}")
-        return scatters
-
-    ani = FuncAnimation(
-        fig,
-        update,
-        frames=len(frame_steps),
-        init_func=init,
-        blit=False,
-    )
-
-    writer = animation.FFMpegWriter(fps=fps)
-    ani.save(movie_path, writer=writer, dpi=150)
-
-    plt.close(fig)
-
-    return movie_path
 
 
 def main() -> None:

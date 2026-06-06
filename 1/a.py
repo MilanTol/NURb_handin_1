@@ -82,7 +82,7 @@ def plot_initial_positions(
     # convert positions shape (Nbodies, 3) -> (3, Nbodies)
     # then extract positions
     x, y, z = positions.T 
-    fig, ax = plt.subplots(2, 1, figsize=(7, 5), constrained_layout=True)
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)
     for i, obj in enumerate(body_names):
         ax[0].scatter(x[i], y[i], label=obj)
         ax[1].scatter(x[i], z[i], label=obj)
