@@ -51,8 +51,8 @@ def get_node_at_level(
 
 
 def fill_massmap_from_octree(
-    root,
-    level,
+    root:Octree_Node,
+    level:int,
     massmap,
 ):
     """
