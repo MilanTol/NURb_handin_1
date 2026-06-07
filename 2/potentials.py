@@ -102,21 +102,32 @@ def main() -> None:
 
     # Question 2: Calculating potentials
 
-    with h5py.File("/disks/cosmodm/DMO_a0.1_256.hdf5", "r") as handle:
-        pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
-        # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
+    # in the run.sh file there is no command that downloads this dataset,
+    # so to test my code i will just randomly populate particles.
+    # with h5py.File("/disks/cosmodm/DMO_a0.1_256.hdf5", "r") as handle:
+    #     pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
+    #     # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
+    
+    pos = np.random.uniform(
+        low=0.0,
+        high=1.0,
+        size=(Np, 3)
+    )
+    
     # Question 2a: using Barnes-Hut [note: not actually calculating a potential, unless you do the bonus question]
 
     # TO DO: build an octree
 
     root = build_octree(
+        particles=np.arange(Np),
         particle_positions=pos,
         center_position=np.array([L / 2, L / 2, L / 2], dtype=np.float32),
-        index=(0, 0, 0),
+        index=np.array([0, 0, 0]),
         box_size=L,
         depth=0,
         max_depth=7,
     )
+    
     # Plotting the mass distribution for a slice
 
     for level in [3, 5, 7]:  # feel free to change any of this code

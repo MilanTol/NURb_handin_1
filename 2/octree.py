@@ -103,7 +103,7 @@ def build_octree(
     # if this is a leaf node, return the node without children
     # compute the center_of_mass, since every particle has the same
     # mass, we can simply take the average particle position:
-    CoM = np.sum(particle_positions, axis=0) / len(particle_positions)
+    CoM = np.sum(particle_positions, axis=0) / len(particles)
 
     # if max depth is reached return the node without creating children,
     # set particles equal to particle_positions.
