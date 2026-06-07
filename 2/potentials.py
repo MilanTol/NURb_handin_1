@@ -20,9 +20,9 @@ rho_mean = (
 
 
 def get_node_at_level(
-    node,
-    target_level,
-    target_index,
+    node:Octree_Node,
+    target_level:int,
+    target_index:np.ndarray,
 ):
     """
     Traverse the octree and return a node at a given level and index
@@ -44,7 +44,27 @@ def get_node_at_level(
 
     # if the current node is already at the requested level,
     # check whether the index matches and return the node
+    if target_level == node.depth:
+        if target_index == node.index:
+            return node
+        else: 
+            return None
 
+    # else: find child in which target_node is contained
+    
+    # compute remaining depth:
+    Delta_level = target_level - node.depth
+
+    # compute offset of the child which contains target_node 
+    # relative to current node.
+    # From the way we have constructed the tree we always have:
+    # child_index = 2*parent_index  + offset
+    # but note what this does in binary representation (in 1 dimension):
+    # it shifts all the previous bits left, then adds either
+    # 1 or 0 to the right depending on which split is made.
+    # so to find out in which children the target_node is located, 
+    # we just have to use the binary representation of the target_index.
+     
     # work out which child recursively
 
     return None
