@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def plot_initial_positions(
     positions: np.ndarray,
     body_names: list[str],
@@ -22,7 +23,7 @@ def plot_initial_positions(
     """
     # convert positions shape (Nbodies, 3) -> (3, Nbodies)
     # then extract positions
-    x, y, z = positions.T 
+    x, y, z = positions.T
     fig, ax = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)
     for i, obj in enumerate(body_names):
         ax[0].scatter(x[i], y[i], label=obj)
@@ -34,7 +35,6 @@ def plot_initial_positions(
     plt.legend(loc=(1.05, 0))
     plt.savefig(os.path.join(output_dir, filename), dpi=300)
     plt.close(fig)
-
 
 
 def plot_orbits_xy(
@@ -58,7 +58,7 @@ def plot_orbits_xy(
 
     # For visibility, you may want to do two versions of this plot:
     # one with all planets, and another zoomed in on the four inner planets
-    x, y, z = positions.T 
+    x, y, z = positions.T
     fig, ax = plt.subplots(1, 1, figsize=(6, 5), constrained_layout=True)
     for i, obj in enumerate(body_names):
         ax.plot(x[i, :], y[i, :], label=obj)
@@ -67,8 +67,7 @@ def plot_orbits_xy(
     plt.legend(loc=(1.05, 0))
     plt.savefig(os.path.join(output_dir, filename), dpi=300)
     plt.close(fig)
-    
-    
+
 
 def z_vs_time(
     times: np.ndarray,
@@ -94,7 +93,7 @@ def z_vs_time(
         Output filename
     """
 
-    x, y, z = positions.T 
+    x, y, z = positions.T
     fig, ax = plt.subplots(figsize=(12, 5), constrained_layout=True)
     for i, obj in enumerate(body_names):
         ax.plot(times, z[i, :], label=obj)

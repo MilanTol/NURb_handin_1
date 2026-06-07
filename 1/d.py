@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation
 
+
 def make_movie_with_matplotlib(
     positions: np.ndarray,
     body_names: list[str],

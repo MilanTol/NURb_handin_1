@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def another_integrator(
     positions_init: np.ndarray,
     velocities_init: np.ndarray,

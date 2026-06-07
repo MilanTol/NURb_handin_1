@@ -10,7 +10,12 @@ from a import get_initial_conditions
 from b import leapfrog_integrator
 from c import another_integrator
 from d import make_movie_with_matplotlib
-from plotting import plot_initial_positions, plot_orbits_xy, z_vs_time, plot_x_difference_vs_time
+from plotting import (
+    plot_initial_positions,
+    plot_orbits_xy,
+    z_vs_time,
+    plot_x_difference_vs_time,
+)
 
 bodies_with_masses = {
     "sun": 1.0,
@@ -27,6 +32,7 @@ bodies_with_masses = {
 
 # Question 1: Simulating the solar system
 
+
 def main() -> None:
     output_dir = "Plots"
     os.makedirs(output_dir, exist_ok=True)
@@ -37,7 +43,9 @@ def main() -> None:
     # current time
     time = Time.now()
 
-    positions_init, velocities_init = get_initial_conditions(time=time, bodies=body_names)
+    positions_init, velocities_init = get_initial_conditions(
+        time=time, bodies=body_names
+    )
 
     # (a)
     plot_initial_positions(

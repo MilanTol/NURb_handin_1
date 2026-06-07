@@ -9,7 +9,9 @@ from astropy.coordinates import get_body_barycentric_posvel
 import astropy.units as u
 
 
-def get_initial_conditions(time:Time, bodies:list[str]) -> tuple[np.ndarray, np.ndarray]:
+def get_initial_conditions(
+    time: Time, bodies: list[str]
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Generate initial conditions for the Solar System using get_body_barycentric_posvel.
 
@@ -32,7 +34,7 @@ def get_initial_conditions(time:Time, bodies:list[str]) -> tuple[np.ndarray, np.
     # instantiate lists for positions and velocities
     positions = []
     velocities = []
-    
+
     # loop over all bodies
     for body in bodies:
         # load in position and velocity of body
@@ -53,10 +55,8 @@ def get_initial_conditions(time:Time, bodies:list[str]) -> tuple[np.ndarray, np.
         # store position and velocity in respective lists
         positions.append(body_pos)
         velocities.append(body_vel)
-        
+
     # convert position and velocitiy lists to arrays
     positions = np.array(positions)
     velocities = np.array(velocities)
     return positions, velocities
-
-
