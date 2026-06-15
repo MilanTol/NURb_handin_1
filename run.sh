@@ -55,13 +55,13 @@ cd ..
 
 
 echo "Running Python script for Exercise 1: Simulating the solar system..."
-python3 simulating_solar_system.py
+python3 1/simulating_solar_system.py
 
 echo "Running Python script for Exercise 2: Calculating potentials..."
-python3 potentials.py
+python3 2/potentials.py
 
 echo "Running Python script for Exercise 3: Spiral and elliptical galaxies..."
-python3 spiral_elliptical_galaxies.py
+python3 3/spiral_elliptical_galaxies.py
 
 echo "Compiling LaTeX..."
 pdflatex -interaction=batchmode NUR_B_handin.tex
