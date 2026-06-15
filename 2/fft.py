@@ -98,3 +98,40 @@ def bit_reversal_swap(x:np.ndarray, N:int)->np.ndarray:
             x[i], x[i_rev] = x[i_rev], x[i]
             
     return x       
+
+
+def fft3d(x:np.ndarray, inverse:bool=False)->np.ndarray: 
+    """
+    computes the 3d fourier transform of x using a bottom-up approach.
+    Done by applying the 1d fft along each axis separately.
+
+    Args:
+        x (np.ndarray): 
+            array of samples. 
+            3D array of shape (N, N, N) where N is a power of 2.
+        inverse (bool):
+            whether to use inverse fourier transform.
+
+    Returns:
+        np.ndarray: fourier-transform of samples.
+    """
+    result = x.astype(np.complex64)
+    # store number of samples in each dimension
+    N0, N1, N2 = result.shape
+    
+    # transform rows along x
+    for j in range(N1):
+        for k in range(N2):
+            result[:, j, k] = fft(result[:, j, k], inverse=inverse)
+
+    # transform into screen rows along y
+    for i in range(N0):
+        for k in range(N2):
+            result[i, :, k] = fft(result[i, :, k], inverse=inverse)
+
+    # transform columns along z
+    for i in range(N0):
+        for j in range(N1):
+            result[i, j, :] = fft(result[i, j, :], inverse=inverse)
+            
+    return result
