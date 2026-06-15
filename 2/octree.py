@@ -134,12 +134,14 @@ def build_octree(
 
                 # mask for particles in this octant:
                 # note that we can use the boolean property of the offsets (0, 1)
-                child_particles = (
+                child_mask = (
                     ((particle_positions[:, 0] > center_position[0]) == offset[0])
                     & ((particle_positions[:, 1] > center_position[1]) == offset[1])
                     & ((particle_positions[:, 2] > center_position[2]) == offset[2])
                 )
-                child_particle_positions = particle_positions[child_particles]
+                
+                child_particles = particles[child_mask]
+                child_particle_positions = particle_positions[child_mask]
 
                 # child center is half a child box size separated from parent center
                 child_center_position = (

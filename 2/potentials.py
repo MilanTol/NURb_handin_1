@@ -52,7 +52,7 @@ def main() -> None:
     
     # Plotting the mass distribution for a slice
 
-    for level in [1, 3, 5, 7]:  # feel free to change any of this code
+    for level in [3, 5, 7]:  # feel free to change any of this code
         pixels = 2**level
         massmap = np.zeros((4, pixels, pixels), dtype=np.float32)
 
