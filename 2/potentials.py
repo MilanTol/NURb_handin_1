@@ -3,9 +3,10 @@ import h5py
 import matplotlib.pyplot as plt
 import os
 
-from octree import build_octree, Octree_Node, get_node_at_level
+from octree import build_octree, Octree_Node, get_node_at_level, fill_massmap_from_octree
 
-Np = np.int64(256) ** 3  # number of particles
+Np = np.int64(16) ** 3
+#Np = np.int64(256) ** 3  # number of particles
 mp = np.float32(3.64453e10)  # particle mass in Msun; all 32-bit to save memory
 G = np.float32(4.3009e-9)  # gravitational constant in Mpc*(km/s)^2/Msun
 h = np.float32(
@@ -17,52 +18,6 @@ redshift = 1.0 / scale_factor - 1
 rho_mean = (
     Np * mp / L**3
 )  # mean density in Msun/Mpc^3 (comoving, matches 3*H_0^2/(8*pi*G))
-
-
-def fill_massmap_from_octree(
-    root:Octree_Node,
-    level:int,
-    massmap,
-):
-    """
-    Fill the four requested x-slices from the octree
-
-    Parameters
-    ----------
-    root : Octree_Node
-        Root of the octree
-    level : int
-        Octree level to plot
-    massmap : ndarray
-        Mass map, shape (4, pixels, pixels)
-
-    Notes
-    -----
-    massmap[0,:,:] corresponds to x-index 0
-    massmap[1,:,:] corresponds to x-index 1
-    massmap[2,:,:] corresponds to x-index 2
-    massmap[3,:,:] corresponds to x-index 3
-    """
-
-    pixels = 2**level
-
-    # loop over the first four x index slices
-    # and fill the corresponding y,z mass maps
-
-    for ix in range(4):
-        for iy in range(pixels):
-            for iz in range(pixels):
-
-                node = get_node_at_level(
-                    node=root,
-                    target_level=level,
-                    target_index=(ix, iy, iz),
-                )
-
-                if node is not None:
-                    massmap[ix, iy, iz] = node.mass
-
-    return
 
 
 def main() -> None:
@@ -79,18 +34,16 @@ def main() -> None:
     
     pos = np.random.uniform(
         low=0.0,
-        high=1.0,
+        high=L,
         size=(Np, 3)
     )
     
     # Question 2a: using Barnes-Hut [note: not actually calculating a potential, unless you do the bonus question]
 
-    # TO DO: build an octree
-
     root = build_octree(
         particles=np.arange(Np),
         particle_positions=pos,
-        center_position=np.array([L / 2, L / 2, L / 2], dtype=np.float32),
+        center_position=np.array([0.5*L, 0.5*L, 0.5*L], dtype=np.float32),
         index=np.array([0, 0, 0]),
         box_size=L,
         depth=0,
@@ -99,12 +52,9 @@ def main() -> None:
     
     # Plotting the mass distribution for a slice
 
-    for level in [3, 5, 7]:  # feel free to change any of this code
+    for level in [1, 3, 5, 7]:  # feel free to change any of this code
         pixels = 2**level
         massmap = np.zeros((4, pixels, pixels), dtype=np.float32)
-        # TO DO: traverse the octree, fill map massmap[0,:,:] with the masses of nodes at depth 3 and x_index=x_0,
-        #        massmap[1,:,:] with the masses of nodes at depth 3 and x_index=x_1, etc; then plot these slices;
-        #        then do the same for levels 5 and 7
 
         fill_massmap_from_octree(
             root=root,

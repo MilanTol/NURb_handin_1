@@ -143,7 +143,7 @@ def build_octree(
 
                 # child center is half a child box size separated from parent center
                 child_center_position = (
-                    center_position + 0.5 * (2 * offset - 1) * child_box_size
+                    center_position + (offset - 0.5) * child_box_size
                 )
 
                 # recursively call build on the children
@@ -153,7 +153,7 @@ def build_octree(
                     center_position=child_center_position,
                     index=child_index,
                     box_size=child_box_size,
-                    depth=depth + 1,
+                    depth=depth+1, #update depth to depth+1
                     max_depth=max_depth,
                 )
 
@@ -189,30 +189,93 @@ def get_node_at_level(
     node : Octree_Node or None
         Node at the requested level and index
     """
-
+    
     # if the current node is already at the requested level,
     # check whether the index matches and return the node
     if target_level == node.depth:
-        if target_index == node.index:
-            return node
-        else: 
-            return None
+        return node
+        
+    # if the current node has no children return the current node
+    if node.children is None:
+        return node
 
     # else: find child in which target_node is contained
-    
-    # compute remaining depth:
-    Delta_level = target_level - node.depth
 
-    # compute offset of the child which contains target_node 
-    # relative to current node.
+    # First we must compute the offset of the child 
+    # (the offset here means the index of the child)
+    # which contains target_node relative to current node.
+    
     # From the way we have constructed the tree we always have:
-    # child_index = 2*parent_index  + offset
+    # child_index = 2*parent_index  + offset,
+    # (recall that index is a tuples of shape (3,) )
     # but note what this does in binary representation (in 1 dimension):
     # it shifts all the previous bits left, then adds either
     # 1 or 0 to the right depending on which split is made.
-    # so to find out in which children the target_node is located, 
+    # so to find out in which branch the target_node is located, 
     # we just have to use the binary representation of the target_index.
-     
-    # work out which child recursively
+    # then use the entry at current_depth
+    
+    # represent the target_index in binary as a string 
+    # ignore the first 2 elements as this is "sign b": "0b00000"
+    # zfill pads 0's until length of bits is reached
+    # note that the length of bits is given by the depth in which were searching
+    # level 0 -> 0 bits required, # level 1 -> 1 bit required, ...
+    target_index_binary = np.array(
+        tuple(bin(i)[2:].zfill(target_level) for i in target_index)
+        )
+    
+    # extract the offset by looking at the current_depth entry:
+    offset = [i[node.depth] for i in target_index_binary]
+    # convert offset back into integers:
+    offset = tuple(np.array(offset, dtype=int))
+    # define target_child as child which contains the target at some level
+    target_child = node.children[offset]
+        
+    # recursively call on target_child:
+    return get_node_at_level(target_child, target_level, target_index)
 
-    return None
+
+def fill_massmap_from_octree(
+    root:Octree_Node,
+    level:int,
+    massmap,
+):
+    """
+    Fill the four requested x-slices from the octree
+
+    Parameters
+    ----------
+    root : Octree_Node
+        Root of the octree
+    level : int
+        Octree level to plot
+    massmap : ndarray
+        Mass map, shape (4, pixels, pixels)
+
+    Notes
+    -----
+    massmap[0,:,:] corresponds to x-index 0
+    massmap[1,:,:] corresponds to x-index 1
+    massmap[2,:,:] corresponds to x-index 2
+    massmap[3,:,:] corresponds to x-index 3
+    """
+
+    pixels = 2**level
+
+    # loop over the first four x index slices
+    # and fill the corresponding y,z mass maps
+
+    for ix in range(4):
+        for iy in range(pixels):
+            for iz in range(pixels):
+
+                node = get_node_at_level(
+                    node=root,
+                    target_level=level,
+                    target_index=(ix, iy, iz),
+                )
+
+                if node is not None:
+                    massmap[ix, iy, iz] = node.mass
+
+    return
