@@ -26,7 +26,11 @@ def main() -> None:
 
     # Question 2: Calculating potentials
 
-    with h5py.File("/disks/cosmodm/DMO_a0.1_256.hdf5", "r") as handle:
+    # with h5py.File("/disks/cosmodm/DMO_a0.1_256.hdf5", "r") as handle:
+    #     pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
+    #     # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
+    
+    with h5py.File("Data/DMO_a0.1_256.hdf5", "r") as handle:
         pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
         # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
     
@@ -97,7 +101,15 @@ def main() -> None:
     # Question 2b: using the FFT
 
     Ngrid = np.int64(128)
-    densgrid = np.zeros((Ngrid, Ngrid, Ngrid), dtype=np.float32)
+    massgrid = np.zeros((Ngrid, Ngrid, Ngrid), dtype=np.float32)
+    # we fill fill the density grid by using the octree. 
+    # so the grid points are the center_points of the level 7 cells.
+    # note that level 7 has 2**7=128 cells along each axis so this way 
+    # we obtain a 128x128x128 grid.
+    fill_massmap_from_octree(root, level=7, massmap=massgrid)
+    # convert the mass grid to a density grid: (units of M_sun / Mpc^3)
+    densgrid = massgrid * (2**21) / (L*L*L) # divide out the volume of level 7 cells
+    
     potential = np.zeros((Ngrid, Ngrid, Ngrid), dtype=np.float32)
     # TO DO: assign particle masses to densgrid, convert to density, and calculate potentials from it
 
