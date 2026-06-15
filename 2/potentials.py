@@ -3,7 +3,7 @@ import h5py
 import matplotlib.pyplot as plt
 import os
 
-from octree import build_octree, Octree_Node
+from octree import build_octree, Octree_Node, get_node_at_level
 
 Np = np.int64(256) ** 3  # number of particles
 mp = np.float32(3.64453e10)  # particle mass in Msun; all 32-bit to save memory
