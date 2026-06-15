@@ -5,8 +5,8 @@ import os
 
 from octree import build_octree, Octree_Node, get_node_at_level, fill_massmap_from_octree
 
-Np = np.int64(16) ** 3
-#Np = np.int64(256) ** 3  # number of particles
+# Np = np.int64(16) ** 3
+Np = np.int64(256) ** 3  # number of particles
 mp = np.float32(3.64453e10)  # particle mass in Msun; all 32-bit to save memory
 G = np.float32(4.3009e-9)  # gravitational constant in Mpc*(km/s)^2/Msun
 h = np.float32(

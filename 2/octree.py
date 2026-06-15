@@ -139,7 +139,7 @@ def build_octree(
                     & ((particle_positions[:, 1] > center_position[1]) == offset[1])
                     & ((particle_positions[:, 2] > center_position[2]) == offset[2])
                 )
-                
+                # apply the mask
                 child_particles = particles[child_mask]
                 child_particle_positions = particle_positions[child_mask]
 
