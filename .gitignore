@@ -2,3 +2,5 @@ Data/*
 Plots/*
 !Data/.gitkeep
 !Plots/.gitkeep
+
+*.pyc
