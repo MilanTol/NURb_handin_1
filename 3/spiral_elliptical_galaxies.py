@@ -4,28 +4,9 @@ import itertools
 import os
 
 from logistic_regression import logistic_regression, test_logistic_regression
+from data_processing import load_and_prepare_data
 
 # Question 3: Spiral and elliptical galaxies
-
-
-def load_and_prepare_data(filename):
-    """
-    Load the galaxy dataset and prepare the feature matrix and binary class labels
-
-    Returns
-    -------
-    features : ndarray, shape (m, 4)
-        Matrix containing the four rescaled input features
-        Each feature should have mean 0 and standard deviation 1
-
-    labels : ndarray, shape (m,)
-        A value of 1 corresponds to spiral galaxies
-        A value of 0 corresponds to elliptical galaxies
-    """
-    data = np.loadtxt(filename)
-    features = data[:, :4]  
-    labels = data[:, 4].astype(np.int8)  
-    return features, labels
 
 
 def main() -> None:
