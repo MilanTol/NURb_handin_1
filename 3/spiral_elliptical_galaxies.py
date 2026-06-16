@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import itertools
 import os
 
+from logistic_regression import logistic_regression, test_logistic_regression
+
 # Question 3: Spiral and elliptical galaxies
 
 
@@ -21,8 +23,8 @@ def load_and_prepare_data(filename):
         A value of 0 corresponds to elliptical galaxies
     """
     data = np.loadtxt(filename)
-    features = np.random.rand(100, 4)  # REPLACE, base on "data"
-    labels = np.random.randint(0, high=2, size=100)  # REPLACE
+    features = data[:, :4]  
+    labels = data[:, 4].astype(np.int8)  
     return features, labels
 
 
