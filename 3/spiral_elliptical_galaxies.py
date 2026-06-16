@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import itertools
 import os
 
-from logistic_regression import logistic_regression, test_logistic_regression
+from logistic_regression import cost, logistic_regression, test_logistic_regression
 from data_processing import load_and_prepare_data
 
 # Question 3: Spiral and elliptical galaxies
@@ -15,11 +15,13 @@ def main() -> None:
 
     # Problem 3.a
     features, labels = load_and_prepare_data("Data/galaxy_data.txt")
+    
     np.savetxt(
         os.path.join(output_dir, "galaxy_data_scaled.txt"),
         features,
         header="kappa_CO Color Extended Emission_line_flux",
     )
+    
     fig, ax = plt.subplots(2, 2, figsize=(10, 8))
     ax[0, 0].hist(features[:, 0], bins=20)
     ax[0, 0].set(ylabel="N", xlabel=r"$\kappa_{CO}$")
@@ -27,8 +29,10 @@ def main() -> None:
     ax[0, 1].set(xlabel="Color")
     ax[1, 0].hist(features[:, 2], bins=20)
     ax[1, 0].set(ylabel="N", xlabel="Extended")
+    ax[1, 0].set_yscale('log')
     ax[1, 1].hist(features[:, 3], bins=20)
     ax[1, 1].set(xlabel="Emission line flux")
+    ax[1, 1].set_yscale('log')
     plt.savefig(os.path.join(output_dir, "fig3a.png"), dpi=300)
     plt.close()
 
@@ -58,7 +62,7 @@ def main() -> None:
     ) = test_logistic_regression(
         features,
         labels,
-        theta=np.random.rand(3),
+        theta=np.ones_like(features[0]),
         feature_columns=(0, 1),
         output_dir=output_dir,
     )  # REPLACE with the parameters corresponding to the trained model using features 1 and 2; then repeat for the other feature combinations

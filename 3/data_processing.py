@@ -22,8 +22,8 @@ def load_and_prepare_data(filename:str):
     labels = data[:, 4].astype(np.int8)  
     
     # rescale the features
-    features -= np.mean(features, axis=1) # subtract the mean -> mean becomes 0
-    features /= np.std(features, axis=1) # divide the std -> std becomes 1
+    features -= np.mean(features, axis=0) # subtract the mean -> mean becomes 0
+    features /= np.std(features, axis=0) # divide the std -> std becomes 1
     
     return features, labels
 

@@ -2,6 +2,33 @@ import numpy as np
 import os
 
 
+def sigmoid(z):
+    return 1/(1+np.exp(-z))
+
+
+def cost(theta:np.ndarray, features:np.ndarray, labels:np.ndarray)->float:
+    """
+    Returns cost function of a parametrization theta.
+
+    Args:
+        theta (np.ndarray): 
+            parametrization
+        features (np.ndarray): 
+            features of the data
+        labels (np.ndarray):
+            true outcomes of the data
+
+    Returns:
+        (float):
+            cost function value
+    """
+    components = (
+        labels*np.log(sigmoid(theta.T@features))
+        - (1-labels)*np.log( (1 - sigmoid(theta.T@features)) )
+    )
+    return -1/len(labels) * np.sum(components)
+
+
 def logistic_regression(
     features, labels, feature_combinations, learning_rate=0.1, n_iterations=30
 ):
@@ -37,7 +64,7 @@ def logistic_regression(
         Best-fit parameters for each feature combination"""
     return np.random.rand(n_iterations, len(feature_combinations)), [
         np.random.rand(len(columns) + 1) for columns in feature_combinations
-    ]  # REPLACE
+    ]  
 
 
 def test_logistic_regression(features, labels, theta, feature_columns, output_dir):
