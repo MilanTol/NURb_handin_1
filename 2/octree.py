@@ -155,7 +155,7 @@ def build_octree(
                     center_position=child_center_position,
                     index=child_index,
                     box_size=child_box_size,
-                    depth=depth+1, #update depth to depth+1
+                    depth=depth + 1,  # update depth to depth+1
                     max_depth=max_depth,
                 )
 
@@ -168,11 +168,10 @@ def build_octree(
     )
 
 
-
 def get_node_at_level(
-    node:Octree_Node,
-    target_level:int,
-    target_index:np.ndarray,
+    node: Octree_Node,
+    target_level: int,
+    target_index: np.ndarray,
 ):
     """
     Traverse the octree and return a node at a given level and index
@@ -191,55 +190,55 @@ def get_node_at_level(
     node : Octree_Node or None
         Node at the requested level and index
     """
-    
+
     # if the current node is already at the requested level,
     # check whether the index matches and return the node
     if target_level == node.depth:
         return node
-        
+
     # if the current node has no children return the current node
     if node.children is None:
         return node
 
     # else: find child in which target_node is contained
 
-    # First we must compute the offset of the child 
+    # First we must compute the offset of the child
     # (the offset here means the index of the child)
     # which contains target_node relative to current node.
-    
+
     # From the way we have constructed the tree we always have:
     # child_index = 2*parent_index  + offset,
     # (recall that index is a tuples of shape (3,) )
     # but note what this does in binary representation (in 1 dimension):
     # it shifts all the previous bits left, then adds either
     # 1 or 0 to the right depending on which split is made.
-    # so to find out in which branch the target_node is located, 
+    # so to find out in which branch the target_node is located,
     # we just have to use the binary representation of the target_index.
     # then use the entry at current_depth
-    
-    # represent the target_index in binary as a string 
+
+    # represent the target_index in binary as a string
     # ignore the first 2 elements as this is "sign b": "0b00000"
     # zfill pads 0's until length of bits is reached
     # note that the length of bits is given by the depth in which were searching
     # level 0 -> 0 bits required, # level 1 -> 1 bit required, ...
     target_index_binary = np.array(
         tuple(bin(i)[2:].zfill(target_level) for i in target_index)
-        )
-    
+    )
+
     # extract the offset by looking at the current_depth entry:
     offset = [i[node.depth] for i in target_index_binary]
     # convert offset back into integers:
     offset = tuple(np.array(offset, dtype=int))
     # define target_child as child which contains the target at some level
     target_child = node.children[offset]
-        
+
     # recursively call on target_child:
     return get_node_at_level(target_child, target_level, target_index)
 
 
 def fill_massmap_from_octree(
-    root:Octree_Node,
-    level:int,
+    root: Octree_Node,
+    level: int,
     massmap,
 ):
     """
