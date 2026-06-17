@@ -82,9 +82,7 @@ def logistic_regression_single_feature_combination(
         The bias is given in the last entry: bias = theta[-1]
     """
         
-    # add bias to the features
-    features = np.hstack([features, np.ones((features.shape[0], 1))])
-    
+    # add bias to the features  
     cost_vals = [] # initialize a list in which to store cost values
     theta = np.ones_like(features[0]) # initialize all theta vals to 1
     
@@ -132,9 +130,16 @@ def logistic_regression(
     theta_values : list of ndarray, shape(n_combinations, 1+n_features)
         Best-fit parameters for each feature combination
     """
+    
+    # add bias to features, set them inside the first column
+    features = np.hstack([np.ones((features.shape[0],1)), features])
+
     cost_vals = []
     thetas = []
     for feature_combination in feature_combinations:
+        # add bias to feature_combinations:
+        feature_combination = (0,) + feature_combination
+        
         features_temp = features[:,feature_combination]
         cost_vals_temp, theta = logistic_regression_single_feature_combination(features_temp, labels, learning_rate, n_iterations)
         cost_vals.append(cost_vals_temp)
@@ -142,8 +147,6 @@ def logistic_regression(
     
     # transpose cost_vals to get shape (n_iterations, n_combinations)
     return np.array(cost_vals).T, thetas
-
-
 
 
 def test_logistic_regression(features:np.ndarray, labels:np.ndarray, theta:np.ndarray, feature_columns, output_dir):
@@ -184,10 +187,10 @@ def test_logistic_regression(features:np.ndarray, labels:np.ndarray, theta:np.nd
     """
     
     # add bias to the features
-    features = np.hstack([np.ones((features.shape[0], 1)), features])
+    features = np.hstack([np.ones((features.shape[0],1)), features])
     # add inclusion of bias in feature_columns:
-    # append index of last column in feature_column
-    feature_columns = feature_columns + (len(feature_columns),) 
+    # add 0 index to feature_columns and shift all indices by 1.
+    feature_columns = (0,) + feature_columns
         
     sigmoid_vals = sigmoid(theta@features[:,feature_columns].T)
     predictions = np.array([sigmoid_vals > 0.5])

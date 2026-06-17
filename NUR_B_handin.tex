@@ -37,8 +37,8 @@
 
 \newcommand{\PlotDir}{Plots}
 
-\title{NURa Hand-in 1}
-\author{Name (Student number)}
+\title{NURb Hand-in 1}
+\author{Milan Tol (3162168)}
 \date{Date}
 
 \begin{document}
@@ -66,8 +66,8 @@ objects at the “current time” defined in the example.
 \subsection{(1b) }
 
 Show the orbits of all objects in the x - y plane
-in a suitable reference frame, as well as a plot of time versus position in the z plane. Explain
-whether leapfrog is a suitable choice of an algorithm, and why.
+in a suitable reference frame, as well as a plot of time versus position in the z plane. 
+Explain whether leapfrog is a suitable choice of an algorithm, and why.
 
 \begin{figure}[H]
 \centering
@@ -160,11 +160,21 @@ Plot the distributions of the rescaled features, and save them to a text file; p
 for the first 10 objects in your report (do not hardcode them into the report, but show the first
 10 lines of the text file).
 
+For the data processing we have taken additional steps besides feature scaling to ensure 
+the machine can learn more optimally. When inspecting the data it 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{\PlotDir/fig3a_old.png}
+    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies. Note that 
+    the distribution in the line emission is clipped.}
+\end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig3a.png}
-    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies.}
-    \end{figure}
+    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies. Note that 
+    the distribution in the line emission is clipped.}
+\end{figure}
 
 
     \lstinputlisting[
