@@ -23,10 +23,79 @@ def cost(theta:np.ndarray, features:np.ndarray, labels:np.ndarray)->float:
             cost function value
     """
     components = (
-        labels*np.log(sigmoid(theta.T@features))
-        - (1-labels)*np.log( (1 - sigmoid(theta.T@features)) )
+        labels*np.log(sigmoid(theta@features.T))
+        + (1-labels)*np.log( (1 - sigmoid(theta@features.T)) )
     )
     return -1/len(labels) * np.sum(components)
+
+
+def cost_gradient(theta:np.ndarray, features:np.ndarray, labels:np.ndarray)->np.ndarray:
+    """
+    Returns the gradient of the cost function
+
+    Args:
+        theta (np.ndarray): 
+            parametrization
+        features (np.ndarray): 
+            features of the data
+        labels (np.ndarray):
+            true outcomes of the data
+
+    Returns:
+        (np.ndarray):
+            gradient of cost function
+    """
+    return 1/len(labels) * features.T @ ( sigmoid(theta@features.T) - labels )
+
+
+def logistic_regression_single_feature_combination(
+    features:np.ndarray, labels:np.ndarray, learning_rate=0.1, n_iterations=30
+):
+    """
+    This function should select a chosen set
+    of input feature columns, then fit a logistic regression model to classify
+    galaxies as spirals or ellipticals.
+
+    Parameters
+    ----------
+    features : ndarray, shape (m, 4)
+        Rescaled feature matrix
+
+    labels : ndarray, shape (m,)
+        1 corresponds to spiral galaxies
+        0 corresponds to elliptical galaxies
+
+    learning_rate : float, optional
+        Step size used in gradient descent
+
+    n_iterations : int, optional
+        Number of minimisation iterations
+
+    Returns
+    -------
+    cost_function : ndarray, shape (n_iterations,)
+        Cost function values for every iteration 
+
+    theta : list of ndarray, shape(n_features+1)
+        best fit_values for theta.
+        This also includes the bias, hence the shape is n_features+1.
+        The bias is given in the last entry: bias = theta[-1]
+    """
+        
+    # add bias to the features
+    features = np.hstack([features, np.ones((features.shape[0], 1))])
+    
+    cost_vals = [] # initialize a list in which to store cost values
+    theta = np.ones_like(features[0]) # initialize all theta vals to 1
+    
+    for i in range(n_iterations): 
+        # update theta_value using gradient descent
+        theta -= learning_rate*cost_gradient(theta, features, labels)
+        # store cost value
+        cost_vals.append(cost(theta, features, labels))
+        
+    return np.array(cost_vals), theta
+
 
 
 def logistic_regression(
@@ -60,14 +129,24 @@ def logistic_regression(
     cost_function : ndarray, shape (n_iterations, n_combinations)
         Cost function values for every iteration and every feature combination
 
-    theta_values : list of ndarray
-        Best-fit parameters for each feature combination"""
-    return np.random.rand(n_iterations, len(feature_combinations)), [
-        np.random.rand(len(columns) + 1) for columns in feature_combinations
-    ]  
+    theta_values : list of ndarray, shape(n_combinations, 1+n_features)
+        Best-fit parameters for each feature combination
+    """
+    cost_vals = []
+    thetas = []
+    for feature_combination in feature_combinations:
+        features_temp = features[:,feature_combination]
+        cost_vals_temp, theta = logistic_regression_single_feature_combination(features_temp, labels, learning_rate, n_iterations)
+        cost_vals.append(cost_vals_temp)
+        thetas.append(theta)
+    
+    # transpose cost_vals to get shape (n_iterations, n_combinations)
+    return np.array(cost_vals).T, thetas
 
 
-def test_logistic_regression(features, labels, theta, feature_columns, output_dir):
+
+
+def test_logistic_regression(features:np.ndarray, labels:np.ndarray, theta:np.ndarray, feature_columns, output_dir):
     """
     Compute the number of true/false positives/negatives, as well as the F1 score, and save them for your report
 
@@ -84,6 +163,7 @@ def test_logistic_regression(features, labels, theta, feature_columns, output_di
 
     feature_columns : list or tuple
         Feature columns corresponding to parameters used by the trained model
+        
     output_dir : str
         Directory where to save the results
 
@@ -102,11 +182,20 @@ def test_logistic_regression(features, labels, theta, feature_columns, output_di
 
     f1_score : float
     """
-    predictions = np.random.randint(0, 2, size=labels.shape)  # REPLACE
-    true_positive = np.random.randint(0, 50)  # REPLACE
-    false_positive = np.random.randint(0, 50)  # REPLACE
-    true_negative = np.random.randint(0, 50)  # REPLACE
-    false_negative = np.random.randint(0, 50)  # REPLACE
+    
+    # add bias to the features
+    features = np.hstack([np.ones((features.shape[0], 1)), features])
+    # add inclusion of bias in feature_columns:
+    # append index of last column in feature_column
+    feature_columns = feature_columns + (len(feature_columns),) 
+        
+    sigmoid_vals = sigmoid(theta@features[:,feature_columns].T)
+    predictions = np.array([sigmoid_vals > 0.5])
+    
+    true_positive = np.sum((predictions==1) & (labels==1))
+    false_positive = np.sum((predictions==1) & (labels==0))
+    false_negative = np.sum((predictions==0) & (labels==1))
+    true_negative = np.sum((predictions==0) & (labels==0))
 
     precision = true_positive / (true_positive + false_positive)
     recall = true_positive / (true_positive + false_negative)
