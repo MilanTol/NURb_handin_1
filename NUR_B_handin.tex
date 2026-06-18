@@ -113,28 +113,67 @@ Make the same plots that you did in (b), as well as a plot of the difference in 
 
 Describe how you constructed your octree.
 
+The octree was constructed by recursively splitting nodes into their children and passing the information to them.
+For this we first constructed a Node class. This node class stores the following information:
+\begin{itemize}
+    \item Indices of the particles inside the node.
+    \item The depth/level of the node. The root node has depth/level 0. 
+    \item The index of the node. The index is defined as the position of the node, in units of nodes at the level of that node.
+    In the first split: the root node splits into 8 children of depth 1. The child that is closest to the origin in position space
+    gets index (0,0,0), while the node the furthest away gets index (1,1,1). In the next split (depth 2) the furthest node would instead 
+    have index (3, 3, 3). 
+    \item The center of mass of the node. 
+    \item The children of the node, which is an array containing 8 nodes. If the node is a leaf node, then it contains no children.
+    \item The total mass of the Node. Since we use a constant particle mass this is simply the number of particles times the particle mass.
+\end{itemize}
 
+The octree was the constructed by recursively calling the \textit{build} function. 
+The build function is passed an array of particle indices, particle positions, the center of the current node,
+the index of the current node, the box_size of the current node, depth of the current node, and the desired max depth of the tree.
+The build function essentially does the following: It checks whether the current Node 
+contains any particles or whether the max desired depth of the tree is reached. If that is the case, then it 
+returns the current Node without splitting it up into any children. If neither condition is met, the build function 
+splits up the current node into 8 children and then calls the build function on each child before returning the 
+current Node. Note that it is important that we pass the box_size of the current node to calculate the center_positions 
+of the child nodes. 
+So we can construct our tree by creating a root node with the build function on 
+all our particles and pass a desired depth.
 
-Plot the mass distribution for four slices at different depth levels, namely the first four slices in xi at levels 3,
-5 and 7.
+The mass map at some desired resolution can then be constructed by counting 
+the particles in each node at the level corresponding to the desired resolution.
+More technically: For each pixel in the mass map, we call the get_node_at_level function.
+This function traverses the octree and returns the node at a given level and index. 
+The massmap value is then given by the total mass in the node.
+Traversing the octree can be done efficiently since the index of the node has a neat mapping 
+to all the splits of parent nodes necessary to get to the desired child. 
+See the comments provided in the get_node_at_level function.
+
+The mass distribution for four slices at different depth levels, namely the first four slices in the x-axis, at levels 3,
+5 and 7, are plotted in figures \ref{Fig: massmap level 3, Fig: massmap level 5, Fig: massmap level 7}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level3.png}
     \caption{Mass distribution for the first four slices in xi at level 3 of the octree.}
-    \end{figure}
+    \label{Fig: massmap level 3}
+\end{figure}
 
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level5.png}
-        \caption{Mass distribution for the first four slices in xi at level 5 of the octree.}
-        \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level5.png}
+    \caption{Mass distribution for the first four slices in xi at level 5 of the octree.}
+    \label{Fig: massmap level 5}
+\end{figure}
     
-        \begin{figure}[H]
-            \centering
-            \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level7.png}
-            \caption{Mass distribution for the first four slices in xi at level 7 of the octree.}
-            \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level7.png}
+    \caption{Mass distribution for the first four slices in xi at level 7 of the octree.}
+    \label{Fig: massmap level 7}
+\end{figure}
+
+As expected we see that the lower levels return a lower resolution. The spatial fraction that each node
+occupies is equal, this results in an uneven spread of particles that each node contains.
         
 
 \subsection{(2b) }
