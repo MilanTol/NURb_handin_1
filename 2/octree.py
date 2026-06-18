@@ -261,14 +261,12 @@ def fill_massmap_from_octree(
     massmap[3,:,:] corresponds to x-index 3
     """
 
-    pixels = 2**level
-
     # loop over the first four x index slices
     # and fill the corresponding y,z mass maps
 
-    for ix in range(4):
-        for iy in range(pixels):
-            for iz in range(pixels):
+    for ix in range(massmap.shape[0]):
+        for iy in range(massmap.shape[1]):
+            for iz in range(massmap.shape[2]):
 
                 node = get_node_at_level(
                     node=root,

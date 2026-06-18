@@ -81,13 +81,13 @@ def main() -> None:
         fig.colorbar(pcm, ax=ax[0, 1], label="Total mass inside node")
 
         pcm = ax[1, 0].pcolormesh(
-            np.arange(pixels), np.arange(pixels), massmap[2, :, :]
+            np.arange(pixels), np.arange(pixels), massmap[-2, :, :]
         )
         ax[1, 0].set(ylabel="z index", xlabel="y index", title="x index = 2")
         fig.colorbar(pcm, ax=ax[1, 0], label="Total mass inside node")
 
         pcm = ax[1, 1].pcolormesh(
-            np.arange(pixels), np.arange(pixels), massmap[3, :, :]
+            np.arange(pixels), np.arange(pixels), massmap[-1, :, :]
         )
         ax[1, 1].set(xlabel="y index", title="x index = 3")
         fig.colorbar(pcm, ax=ax[1, 1], label="Total mass inside node")
@@ -101,6 +101,7 @@ def main() -> None:
         plt.savefig(os.path.join(output_dir, f"fig2a_level{level}.png"), dpi=300)
         plt.close()
 
+    
     # Question 2b: using the FFT
 
     level = 7 # use 7 for final version -> 128 particles along each axis

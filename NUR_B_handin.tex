@@ -179,7 +179,14 @@ occupies is equal, this results in an uneven spread of particles that each node 
 \subsection{(2b) }
 
 Describe how you computed the potential and implemented fft.
-
+To compute the potential we can transform the differential equation into fourier space. 
+But this requires us to know the fourier transform of the density. 
+For this we first grid the particles into a $128^3$ grid. This grid is given by level 7 nodes of our octree.
+Again we can create a massmap that we can convert into a density grid by dividing it by the boxsize of level 7 nodes.
+The volume of a level 7 node is given by $\left( \frac{L}{128}\right)^3$.
+This 3 dimensional grid containing the densities is then passed into our 3d fast fourier transform (fft) algorithm.
+The 3d fft is essentially just a bunch of 1d ffts along each axis combined. The interesting 
+part is programming the 1d fft. We do this using the Cooley-Tukey bottom up approach.
 
 Plot the results for different slices.
             
