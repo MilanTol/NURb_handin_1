@@ -136,12 +136,14 @@ def plot_x_difference_vs_time(
         Output filename
     """
 
-    x, y, z = np.random.rand(3, 9, 10) * 10 - 5  # REPLACE
-    time = x.copy() * 0 + np.linspace(0, 200, 10)  # REPLACE
+    x1 = positions_a.T[0]
+    delta_x1 = (x1 - x1[0]) 
+    x2 = positions_b.T[0]
+    delta_x2 = (x1 - x2)/(x1+x2) #(x2 - x2[0]) 
     fig, ax = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)
     for i, obj in enumerate(np.flip(body_names)):
-        ax[0].plot(time[i, :], z[i, :], label=obj)
-        ax[1].plot(time[i, :], z[i, :], label=obj)
+        ax[0].plot(times, delta_x1[i, :], label=obj)
+        ax[1].plot(times, delta_x2[i, :], label=obj)
     ax[0].set(xlabel="Time [yr]", ylabel="Z [AU]", title="Leapfrog")
     ax[1].set(xlabel="Time [yr]", ylabel="Z [AU]", title="Other method")
     plt.legend(loc=(1.05, 0))

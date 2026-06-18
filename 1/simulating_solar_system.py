@@ -8,7 +8,7 @@ from astropy.time import Time
 
 from a import get_initial_conditions
 from b import leapfrog_integrator
-from c import another_integrator
+from c import RK4
 from d import make_movie_with_matplotlib
 from plotting import (
     plot_initial_positions,
@@ -86,7 +86,7 @@ def main() -> None:
         filename="z_vs_time_leapfrog.png",
     )
     # (c)
-    positions_another, velocities_another = another_integrator(
+    positions_another, velocities_another = RK4(
         positions_init=positions_init,
         velocities_init=velocities_init,
         masses=masses,
@@ -118,16 +118,27 @@ def main() -> None:
         filename="x_difference_another_method_minus_leapfrog.png",
     )
 
-    # (d): optional
-
-    # movie_path = make_movie_with_matplotlib(
-    #     positions=positions_lf,
-    #     body_names=body_names,
-    #     output_dir="Plots",
-    #     frame_interval=10,
-    #     movie_name="solar_system_movie.mp4",
-    #     fps=30,
-    # )
+    # (d): 
+        
+    # we must choose our frame_interval such that we do not exceed 30s
+    # the total frames is given by the length of positions_lf[0]*frame_interval
+    # the total duration of our move is then given by:
+    # T = frames / (frame_interval * fps)
+    # so frame_interval =  fps * len(positions) / T
+    fps = 24 # frames per second
+    T = 20 # seconds
+    frames = len(positions_lf[0])
+    
+    frame_interval = frames // (fps*T)
+    
+    movie_path = make_movie_with_matplotlib(
+        positions=positions_another,
+        body_names=body_names,
+        output_dir="Plots",
+        frame_interval=frame_interval,
+        movie_name="solar_system_movie.mp4",
+        fps=fps,
+    )
 
 
 if __name__ == "__main__":
