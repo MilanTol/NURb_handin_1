@@ -64,6 +64,30 @@ def fft(x: np.ndarray, inverse: bool = False) -> np.ndarray:
     return x
 
 
+def fft_frequencies(Nsamples:int, L:float)->np.ndarray:
+    """
+    Computes the frequencies which a fft would return
+
+    Args:
+        Nsamples (int): number of samples must be a power of 2.
+        L (float): Size of box
+
+    Returns:
+        k (np.ndarray): fourier_space frequencies.
+    """
+
+    # compute the frequencies at which the fourier_transform computes.
+    Delta_k = 2*np.pi / L
+    
+    k = np.arange(Nsamples)
+    # frequencies at indices N/2 +1 ,..., N - 1
+    # are actually -N+1 ,..., -1
+    k[int(0.5*Nsamples + 1):] -= Nsamples
+    
+    k = Delta_k * k.astype("float32")
+    
+    return k
+
 def bit_reversal_swap(x: np.ndarray, N: int) -> np.ndarray:
     """
     swaps elements of x on index i, with elements of x on
