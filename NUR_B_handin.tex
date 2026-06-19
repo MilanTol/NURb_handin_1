@@ -330,19 +330,37 @@ for the first 10 objects in your report (do not hardcode them into the report, b
 10 lines of the text file).
 
 For the data processing we have taken additional steps besides feature scaling to ensure 
-the machine can learn more optimally. When inspecting the data it 
+the machine can learn more optimally. When inspecting the data with 
+simple feature scaling (see Figure \ref{fig3a_old}) we see that 
+the extendedness as well as the emission line flux appear to be log distributed. 
+This can cause problems since the features of the bulk of objects around the mean 
+are then indistinguisable for the logistic regression algorithm. 
+To ensure that our algorithm can still extract information from these 2 features, we 
+transform them into log space before applying the feature scaling.
+We also see that the emission line flux suffers from 2 extreme outliers. 
+Hence without additional preprocessing, the line emission of other objects is still indistinguishable.
+So we also clip the emission line flux after transforming the data into logspace as follows:
+We demand that each data set is within some median offset from the median line emission flux.
+In this case we set this tolerance to 100 median offsets. If the data falls outside of this range, 
+it is clipped to 100 median offsets from the median. The distribution of the preprocessed 
+data can be seen in Figure \ref{fig3a}. We see that 5 line emission data points are clipped 
+and there is now a visible distribution in the bulk of line emission data points. 
+Also the values of the extendedness of the galaxies are more distinguishable.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig3a_old.png}
-    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies. Note that 
-    the distribution in the line emission is clipped.}
+    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies without any 
+    additional preprocessing. Note that the y-axis for the extendedness and the emission line flux are logscaled.}
+    \label{fig3a_old}
 \end{figure}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig3a.png}
-    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies. Note that 
-    the distribution in the line emission is clipped.}
+    \caption{Distributions of the rescaled features for the spiral and elliptical galaxies.  Note that the y-axis for the extendedness and the emission line flux are logscaled.
+    Also the distribution in the line emission is clipped and the plotted values for the extendedness 
+    and emission line flux are logarithmic.}
+    \label{fig3a}
 \end{figure}
 
 

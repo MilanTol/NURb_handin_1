@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import itertools
 import os
 
-from logistic_regression import cost, logistic_regression, test_logistic_regression
+from logistic_regression import logistic_regression, test_logistic_regression
 from data_processing import load_and_prepare_data, load_and_prepare_data_old
 
 # Question 3: Spiral and elliptical galaxies
@@ -64,12 +64,14 @@ def main() -> None:
         (2,4),
         (3,4),
     ]
+    learning_rate = 0.02
+    max_iters = 1000
     cost_vals, thetas = logistic_regression(
         features, 
         labels,
         feature_combinations,
-        learning_rate=0.1,
-        n_iterations=1000,
+        learning_rate,
+        n_iterations=max_iters,
     )  
     fig, ax = plt.subplots(1, 1, figsize=(10, 5), constrained_layout=True)
     for i, comb in enumerate(feature_combinations):
@@ -86,22 +88,29 @@ def main() -> None:
 
     # Problem 3.c
 
-    # for every feature_combination, compute the test_statistics
-    for i, comb in enumerate(feature_combinations):
-        (
-            predictions,
-            true_positive,
-            false_positive,
-            true_negative,
-            false_negative,
-            f1_score,
-        ) = test_logistic_regression(
-            features,
-            labels,
-            theta=thetas[i],
-            feature_columns=comb,
-            output_dir=output_dir,
-        ) 
+    # for logistic regression using all features, compute the test_statistics
+    all_features = ((1, 2, 3, 4), )
+    cost_vals_all, theta_all = logistic_regression(
+        features, 
+        labels,
+        feature_combinations=all_features,
+        learning_rate=learning_rate,
+        n_iterations=max_iters,
+    )  
+    (
+        predictions,
+        true_positive,
+        false_positive,
+        true_negative,
+        false_negative,
+        f1_score,
+    ) = test_logistic_regression(
+        features,
+        labels,
+        theta=theta_all,
+        feature_columns=all_features,
+        output_dir=output_dir,
+    ) 
 
     
     # For every pair of features, plot the two features against each other and indicate the decision boundary
