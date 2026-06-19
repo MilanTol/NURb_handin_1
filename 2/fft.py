@@ -77,7 +77,9 @@ def fft_frequencies(Nsamples:int, L:float)->np.ndarray:
     """
 
     # compute the frequencies at which the fourier_transform computes.
-    Delta_k = 2*np.pi / L
+    # note that in the employed definition of the fourier transform, 
+    # the spacing in fourier space does not contain the factor 2pi.
+    Delta_k = 1 / L
     
     k = np.arange(Nsamples)
     # frequencies at indices N/2 +1 ,..., N - 1
