@@ -6,10 +6,9 @@ import matplotlib.pyplot as plt
 from astropy.time import Time
 
 
-from a import get_initial_conditions
-from b import leapfrog_integrator
-from c import RK4
-from d import make_movie_with_matplotlib
+from initial_conditions import get_initial_conditions
+from integrators import leapfrog_integrator, RK4_integrator
+from movie import make_movie_with_matplotlib
 from plotting import (
     plot_initial_positions,
     plot_orbits_xy,
@@ -87,7 +86,7 @@ def main() -> None:
         filename="z_vs_time_leapfrog.png",
     )
     # (c)
-    positions_another, velocities_another = RK4(
+    positions_RK4, velocities_RK4 = RK4_integrator(
         positions_init=positions_init,
         velocities_init=velocities_init,
         masses=masses,
@@ -96,27 +95,27 @@ def main() -> None:
     )
 
     plot_orbits_xy(
-        positions=positions_another,
+        positions=positions_RK4,
         body_names=body_names,
         output_dir=output_dir,
-        filename="orbits_xy_another_method.png",
+        filename="orbits_xy_RK4.png",
     )
 
     z_vs_time(
         times=times,
-        positions=positions_another,
+        positions=positions_RK4,
         body_names=body_names,
         output_dir=output_dir,
-        filename="z_vs_time_another_method.png",
+        filename="z_vs_time_RK4.png",
     )
 
     plot_x_difference_vs_time(
         times=times,
         positions_a=positions_lf,
-        positions_b=positions_another,
+        positions_b=positions_RK4,
         body_names=body_names,
         output_dir=output_dir,
-        filename="x_difference_another_method_minus_leapfrog.png",
+        filename="x_difference_RK4_method_minus_leapfrog.png",
     )
 
     # (d): 
