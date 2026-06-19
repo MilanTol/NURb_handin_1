@@ -147,23 +147,28 @@ def main() -> None:
     pcm = ax[0, 0].pcolormesh(
         np.arange(Ngrid), np.arange(Ngrid), np.abs(potential[0, :, :])
     )
+    ax[0, 0].set(ylabel="z index", title="x index = 0")
     # ax[0,0].set(ylabel='...', title='...')
-    fig.colorbar(pcm, ax=ax[0, 0], label="Potential")
+    fig.colorbar(pcm, ax=ax[0, 0], label="-Potential")
     pcm = ax[0, 1].pcolormesh(
         np.arange(Ngrid), np.arange(Ngrid), np.abs(potential[16, :, :])
     )
+    ax[0, 1].set(title="x index = 16")
     # ax[0,1].set(title='...')
-    fig.colorbar(pcm, ax=ax[0, 1], label="Potential")
+    fig.colorbar(pcm, ax=ax[0, 1], label="-Potential")
     pcm = ax[1, 0].pcolormesh(
         np.arange(Ngrid), np.arange(Ngrid), np.abs(potential[32, :, :])
     )
+    ax[1, 0].set(ylabel="z index", xlabel="y index", title="x index = 32")
     # ax[1,0].set(ylabel='...', xlabel='...', title='...')
-    fig.colorbar(pcm, ax=ax[1, 0], label="Potential")
+    fig.colorbar(pcm, ax=ax[1, 0], label="-Potential")
     pcm = ax[1, 1].pcolormesh(
         np.arange(Ngrid), np.arange(Ngrid), np.abs(potential[64, :, :])
     )
+    ax[1, 1].set(xlabel="y index", title="x index = 64")
+    
     # ax[1,1].set(xlabel='...', title='...')
-    fig.colorbar(pcm, ax=ax[1, 1], label="Potential")
+    fig.colorbar(pcm, ax=ax[1, 1], label="-Potential")
     ax[0, 0].set_aspect("equal", "box")
     ax[0, 1].set_aspect("equal", "box")
     ax[1, 0].set_aspect("equal", "box")

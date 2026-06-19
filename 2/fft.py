@@ -66,7 +66,7 @@ def fft(x: np.ndarray, inverse: bool = False) -> np.ndarray:
 
 def fft_frequencies(Nsamples:int, L:float)->np.ndarray:
     """
-    Computes the frequencies which a fft would return
+    Returns the frequencies which a fft would return.
 
     Args:
         Nsamples (int): number of samples must be a power of 2.
@@ -120,6 +120,8 @@ def bit_reversal_swap(x: np.ndarray, N: int) -> np.ndarray:
         # convert back to integer in base 10
         i_rev = int(i_rev, 2)
         # ensure we only swap once per pair
+        # since pairs are mixed all throughout, 
+        # we cannot simply loop over the first N/2 indices
         if i < i_rev:
             x[i], x[i_rev] = x[i_rev], x[i]
 

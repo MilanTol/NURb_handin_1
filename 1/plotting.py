@@ -61,7 +61,7 @@ def plot_orbits_xy(
     x, y, z = positions.T
     fig, ax = plt.subplots(1, 1, figsize=(6, 5), constrained_layout=True)
     for i, obj in enumerate(body_names):
-        ax.plot(x[i, :], y[i, :], label=obj)
+        ax.plot(x[i, :], y[i, :], label=obj, linewidth=0.5)
     ax.set_aspect("equal", "box")
     ax.set(xlabel="X [AU]", ylabel="Y [AU]")
     plt.legend(loc=(1.05, 0))
@@ -102,6 +102,7 @@ def z_vs_time(
         ylabel="z [AU]",
         title="z position as a function of time",
     )
+    ax.set(xlim=(0, 300))
     ax.legend(fontsize=8)
     plt.legend(loc=(1.05, 0))
     plt.tight_layout()
@@ -109,7 +110,7 @@ def z_vs_time(
     plt.close(fig)
 
 
-def plot_x_difference_vs_time(
+def plot_r_difference_vs_time(
     times: np.ndarray,
     positions_a: np.ndarray,
     positions_b: np.ndarray,
@@ -118,7 +119,7 @@ def plot_x_difference_vs_time(
     filename: str,
 ) -> None:
     """
-    Plot difference in x positions between two integration methods.
+    Plot difference in r positions between two integration methods.
 
     Parameters
     ----------
@@ -136,16 +137,21 @@ def plot_x_difference_vs_time(
         Output filename
     """
 
-    x1 = positions_a.T[0]
-    delta_x1 = (x1 - x1[0]) 
-    x2 = positions_b.T[0]
-    delta_x2 = (x1 - x2)/(x1+x2) #(x2 - x2[0]) 
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)
-    for i, obj in enumerate(np.flip(body_names)):
-        ax[0].plot(times, delta_x1[i, :], label=obj)
-        ax[1].plot(times, delta_x2[i, :], label=obj)
-    ax[0].set(xlabel="Time [yr]", ylabel="Z [AU]", title="Leapfrog")
-    ax[1].set(xlabel="Time [yr]", ylabel="Z [AU]", title="Other method")
+    x1 = positions_a[:,:,0]
+    x2 = positions_b[:,:,0]
+    y1 = positions_a[:,:,1]
+    y2 = positions_b[:,:,1]
+    r1 = np.sqrt(x1*x1 + y1*y1)
+    r2 = np.sqrt(x2*x2 + y2*y2)
+    
+    delta_x = (r2 - r1) / np.max(r1) # compute relative difference in radius 
+    # note that for this we use the maximum of the radii the object attains with leapfrog.
+    # since leapfrog is the more accurate integrator, this sets the typical scale for the object.
+    fig, ax = plt.subplots(1, 1, figsize=(12, 5), constrained_layout=True)
+    for i, obj in enumerate(body_names):
+        ax.plot(times, delta_x[:, i], label=obj)
+    ax.set(xlabel="Time [yr]", ylabel=r"$\delta r$", title="RK4 vs Leapfrog")
+    ax.set(xlim=(0, 300))
     plt.legend(loc=(1.05, 0))
     plt.savefig(os.path.join(output_dir, filename), dpi=300)
     plt.close(fig)

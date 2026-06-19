@@ -53,61 +53,150 @@
 
 \section{Simulating the solar system}
 
+
 \subsection{(1a)}
-Make a plot showing the (x, y) positions and another showing the (x, z) positions for all the
-objects at the “current time” defined in the example.
+
+In this exercise we will simulate the trajectory of objects in the solar system. 
+We obtain the initial conditions from astropy. These include the positions in Mpc and velocities in Mpc/yr
+for the sun and all 8 planets. The positions in the xy and xz plane can be seen in Figure \ref{Fig:initial_conditions}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{\PlotDir/initial_positions.png}
     \caption{Initial positions of the objects in the solar system in the x-y and x-z planes.}
-    \end{figure}
+    \label{Fig:initial_conditions}
+\end{figure}
 
 
-\subsection{(1b) }
+\subsection{(1b)}
 
 Show the orbits of all objects in the x - y plane
 in a suitable reference frame, as well as a plot of time versus position in the z plane. 
 Explain whether leapfrog is a suitable choice of an algorithm, and why.
 
+Next, we compute the orbits over the following 300 years from these initial conditions. 
+We do this by solving the differential equation given by Newton's law of gravitation. 
+Since this system is isolated, it conserves energy. Because the system satisfies this property,
+it is best to use an integrator that satisfies time-symmetry since this implies the 
+conservation of energy. The \textit{leapfrog integrator} is such a ODE-solver and hence is a 
+suitable choice for the problem at hand. 
+It works by alternatively updating the position and velocity, rather than updating them simultaneously. 
+This means that it uses the velocity at time step $t+dt/2$ to compute the change in position from 
+$x(t)$ to $x(t+dt)$. 
+It then proceeds to use the position at $x(t+dt)$ to update the velocity from 
+$v(t+dt/2)$ to $v(t+3dt/2)$. However, our initial conditions return the velocity and position at some 
+starting time $t_0$. So to start this process we must first update the velocity by half a time step
+by using a different method. We perform this initial \textit{kick} using the 4th order Runge-Kutta method.
+This method does not respect energy conservation, but since we do it for a half time-step, 
+we lose a minimal amount of accuracy. 
+
+For this computation we use a time step of 0.8 days.
+The orbits of each object in the xy plane using leapfrog can be seen in Figure
+\ref{fig:orbits_xy_leapfrog}. One can see ellipses in the Figure. This is because after some 
+period T, each object returns approximately to its original state in phase-space. 
+In a general multi-body problem this is unexpected, but for the 2-body problem this is a 
+well-known result, so why does it apply here? This is because the sun dominates the mass-budget
+of the system. Thus the system is well approximated by several 2-body problems of planet-sun pairs.
+The z-coordinate (the elevation from the plane) versus time can be seen in Figure
+\ref{fig:orbits_xy_leapfrog}. We see oscillatory motion for all objects. 
+This is due to the same reason as mentioned above for the xy plane. From this 
+plot we can read off the period $T$: the time it takes for a body to do one sinusoidal 
+oscillation in the z-axis.
+
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{\PlotDir/orbits_xy_leapfrog.png}
-\caption{Orbits of the objects in the x-y plane using the leapfrog integrator.}
+    \centering
+    \includegraphics[width=0.85\textwidth]{\PlotDir/orbits_xy_leapfrog.png}
+    \caption{Orbits of the objects in the x-y plane using the leapfrog integrator over a period of 300 years.
+    The timestep for the integrator is 0.8 days. Note that all
+    objects approximately return to their starting positions after some period, resulting in ellipses.
+    This is expected in a system where one mass, the sun, dominates.}
+    \label{fig:orbits_xy_leapfrog}
 \end{figure}
  
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{\PlotDir/z_vs_time_leapfrog.png}
-    \caption{Position in the z plane as a function of time for all objects using the leapfrog integrator.}
-    \end{figure}
- 
+    \caption{Position in the z plane as a function of time for all objects using the leapfrog integrator over a period of 300 years.
+    The timestep for the integrator is 0.8 days. Note that all
+    objects approximately return to their starting positions after some period, resulting in oscillatory motion.
+    This is expected in a system where one mass, the sun, dominates.}
+    \label{fig:orbits_zt_leapfrog}
+\end{figure}
+
     
 \subsection{(1c) }
 
-Explain the integration algorithm you used. What are the differences compared to the leapfrog method? 
+In this subsection, we compute the orbits again over a period of 300 years. But this time, we choose 
+a less suitable algorithm that does not respect energy conservation.
+We will use 4th order Runge-Kutta (RK4) throughtout the entire period. 
+Since this method is a forward integration method, it will likely artificially induce
+energy into the system due to finite stepsizes. Thus we expect the orbits to grow larger over time. However, the 
+further the objects are away from the sun, the typical time scales corresponding to their orbit, their period $T$, 
+will get increasingly large relative to the timesteps used for integrating. Effectively, 
+our time steps become smaller compared to the timescale of the dynamics of the object.
+Hence RK4 becomes more accurate the further separated the body is from the sun. 
 
-Make the same plots that you did in (b), as well as a plot of the difference in the bodies' x positions versus time between the leapfrog method and the other method. Discuss your results.
+We test our hypothesis by analysing Figure \ref{fig:orbits_xy_RK4} and \ref{fig:z_vs_time_RK4}.
+We see that in the xy plane, the gas giants that are located at larger radii traverse ellipses 
+and seem to approximately return to their initial phase-space states. For the inner 4 planets, 
+we see a clear difference between the trajctory computed by Leapfrog and RK4.
+To better see what is happening to these trajectories we plot a zoomed-in version of the 
+trajectories of the sun and the inner 4 planets in Figure \ref{fig:orbits_xy_RK4_inner}. 
+We see that the planets do not return to their initial states. Instead, the planets migrate further out
+as we would expect if the integrator artificially added energy into the system. We also see that this
+effect is stronger for the bodies closer in, mercury in particular.
+
+We can confirm that they are indeed migrating outwards by looking at Figure \ref{fig:z_vs_time_RK4} 
+and Figure \ref{fig:r_difference_RK4_minus_leapfrog}. In \ref{fig:z_vs_time_RK4} we see that the 
+amplitude of the z_separation oscillation of the terrestrial planets increases over time. Hinting 
+at outwards motion. In \ref{fig:r_difference_RK4_minus_leapfrog} we plot the difference in radial distance of 
+bodies of the trajectories computed by RK4 versus leapfrog. We normalize it by the max radius of the trajectories 
+found by using leapfrog. This gives us a better comparison of objects close and further from the sun, to see where the RK4 
+algorithm fails more. 
+We see that for the terrestrial planets there is a clear trend that the bodies are moving outwards. 
+For the gas planets, there is a suprising amount of deviation as well, but it seems to oscillate around 0.
+Hence there is no substantial amount of energy added for these bodies further out.
+We have checked that decreasing the step-size increases the deviation strongly and  
+jupiter starts showing outwards migration as well.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_another_method.png}
-\caption{Orbits of the objects in the x-y plane using another integration method.}
+\includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_RK4.png}
+\caption{Orbits of the objects in the x-y plane using a 4th order Runge-Kutta integrator over a period of 300 years.
+    The timestep for the integrator is 0.8 days.}
+\caption{fig:orbits_xy_RK4}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_RK4_inner.png}
+\caption{Orbits of the inner 4 planets and the sun in the x-y plane using a 4th order Runge-Kutta integrator over a period of 300 years.
+    The timestep for the integrator is 0.8 days.}
+\caption{fig:orbits_xy_RK4_inner}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{\PlotDir/z_vs_time_another_method.png}
-    \caption{Position in the z plane as a function of time for all objects using another integration method.}
-    \end{figure}
+    \includegraphics[width=0.8\textwidth]{\PlotDir/z_vs_time_RK4.png}
+    \caption{Position in the z plane as a function of time for all objects using a 4th order Runge-Kutta integrator 
+    over a period of 300 years. The timestep for the integrator is 0.8 days.}
+    \label{fig:z_vs_time_RK4}
+\end{figure}
 
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.8\textwidth]{\PlotDir/x_difference_another_method_minus_leapfrog.png}
-        \caption{Difference in the x positions of the bodies as a function of time between the leapfrog method and another integration method.}
-        \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{\PlotDir/r_difference_RK4_minus_leapfrog.png}
+    \caption{Difference in the x positions of the bodies as a function of time between the leapfrog method and another integration method.}
+    \label{fig:r_difference_RK4_minus_leapfrog}
+\end{figure}
+
+\subsection{(1d)}
+
+The movie has a framerate of 24 per second. Note that the period of venus is about the same 
+as the amount of time that passes in between frames. This results in a seemingly 
+long period, but is not accurately depicting the actual period. 
+
 
 \section{Calculating potentials in different ways}
-
 
 \subsection{(2a) }
 
@@ -173,12 +262,14 @@ The mass distribution for four slices at different depth levels, namely the firs
 \end{figure}
 
 As expected we see that the lower levels return a lower resolution. The spatial fraction that each node
-occupies is equal, this results in an uneven spread of particles that each node contains.
+occupies is equal, this results in an uneven spread of particles that each node contains, as expected 
+for an octree.
         
 
 \subsection{(2b) }
 
 Describe how you computed the potential and implemented fft.
+
 To compute the potential we can transform the differential equation into fourier space. 
 But this requires us to know the fourier transform of the density. 
 For this we first grid the particles into a $128^3$ grid. This grid is given by level 7 nodes of our octree.
@@ -186,18 +277,48 @@ Again we can create a massmap that we can convert into a density grid by dividin
 The volume of a level 7 node is given by $\left( \frac{L}{128}\right)^3$.
 This 3 dimensional grid containing the densities is then passed into our 3d fast fourier transform (fft) algorithm.
 The 3d fft is essentially just a bunch of 1d ffts along each axis combined. The interesting 
-part is programming the 1d fft. We do this using the Cooley-Tukey bottom up approach.
+part is programming the 1d fft. We do this using the Cooley-Tukey algorithm with a bottom up approach.
 
-Plot the results for different slices.
-            
+We start from the fourier transforms of single array elements, which are simply those array elements.
+Then we combine them by treating them as the even and odd terms of an array containing two elements
+as prescribed by the Danielson-Lanczos lemma. 
+We keep adding these terms with the appropriate exponentials until we end up with 
+the fourier transform of the full array. 
+In order to save us from computing all the exponentials, we use trigonometric recurrence.
+This allows us to compute the exponential values by applying products and summing, which 
+are operations that require significantly less flops than complex exponentiation. 
+
+After having performed the ffts in each axis, we end up with the 3d fourier transform. 
+The fourier transform of the potential is then computed by dividing the modulus squared of 
+the wavevector $k$, and multiplying with $-\frac{G}{\pi}$. 
+To obtain the potential in real space, we must take the inverse fourier transform. 
+In our definition this only requires us to add a minus sign in the complex exponent of our 
+fft algorithm. Ultimately the result is independent of the definition of the fourier transform used.
+We plot the resulting potential in Figure \ref{fig:fig2b} in various slices of the x-axis. 
+Note that we plot the negative of the potential, so yellow spots correspond to deeper wells which 
+we expect to be located in denser environments, while blue/black spots correspond to underdense voids.
+The way the discrete fourier transform is formulated,
+assumes a periodicity in the axis over which the transform is done. 
+The periodicity of the fourier transform is apparent in the plot. One can see that 
+in particular the voids connect from one edge to the other.  
+
+When comparing the massmap in Figure \ref{Fig: massmap level 7} with the potential in Figure \ref{fig:fig2b}
+in the 0th x slice,
+we see that the deep well at y = 110 and z = 10 corresponds to a lot of mass that is accumulated.
+It is hoever suprising that we see a void in the potential at around y=50 and z=80. In the massmap 
+we see that there is quite some structure there. The discrepancy can be explained by the fact that our plots 
+are 2d. The potential depends however on structure in different x-slices as well. At different x-slices there 
+might be a lot less mass in the y,z position.
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig2b.png}
-    \caption{Potential computed using the FFT method for different slices.}
+    \caption{Negative of the potential computed using the FFT method for different slices in the x-axis.
+    Yellow spots correspond to deeper wells which 
+    we expect to be located in denser environments, while blue/black spots correspond to underdense voids.}
+    \label{fig:fig2b}
 \end{figure}
-
-
-Discuss the results.
 
 
 \section{Spiral and elliptical galaxies}

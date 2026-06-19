@@ -13,7 +13,7 @@ from plotting import (
     plot_initial_positions,
     plot_orbits_xy,
     z_vs_time,
-    plot_x_difference_vs_time,
+    plot_r_difference_vs_time,
 )
 
 bodies_with_masses = {
@@ -56,8 +56,7 @@ def main() -> None:
 
     # Parameters for the exercise
     total_time = 300.0  # years
-    dt = 0.8 / 365.25  # 0.8 days in years
-    dt = 8 / 365.25  # 8 days in years
+    dt =  0.8 / 365.25  # 0.8 days in years
     N_steps = int(total_time / dt)
 
     times = np.arange(N_steps + 1) * dt
@@ -100,6 +99,13 @@ def main() -> None:
         output_dir=output_dir,
         filename="orbits_xy_RK4.png",
     )
+    
+    plot_orbits_xy(
+        positions=positions_RK4[:,:5,:],
+        body_names=body_names[:5],
+        output_dir=output_dir,
+        filename="orbits_xy_RK4_inner.png",
+    )
 
     z_vs_time(
         times=times,
@@ -109,13 +115,13 @@ def main() -> None:
         filename="z_vs_time_RK4.png",
     )
 
-    plot_x_difference_vs_time(
+    plot_r_difference_vs_time(
         times=times,
         positions_a=positions_lf,
         positions_b=positions_RK4,
         body_names=body_names,
         output_dir=output_dir,
-        filename="x_difference_RK4_method_minus_leapfrog.png",
+        filename="r_difference_RK4_minus_leapfrog.png",
     )
 
     # (d): 
