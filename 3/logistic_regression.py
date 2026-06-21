@@ -95,7 +95,6 @@ def logistic_regression_single_feature_combination(
     return np.array(cost_vals), theta
 
 
-
 def logistic_regression(
     features, labels, feature_combinations, learning_rate=0.1, n_iterations=30
 ):
