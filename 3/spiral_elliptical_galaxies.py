@@ -64,8 +64,8 @@ def main() -> None:
         (2,4),
         (3,4),
     ]
-    learning_rate = 0.02
-    max_iters = 1000
+    learning_rate = 0.2
+    max_iters = 2000
     cost_vals, thetas = logistic_regression(
         features, 
         labels,
@@ -108,7 +108,7 @@ def main() -> None:
         features,
         labels,
         theta=theta_all,
-        feature_columns=all_features,
+        feature_columns=all_features[0],
         output_dir=output_dir,
     ) 
 
@@ -138,7 +138,7 @@ def main() -> None:
         theta = thetas[i]  # the theta corresponding to this feature combination
         # note that if theta@features = 0 then sigmoid(theta@features) returns 0.5,
         # this corresponds to the dicision boundary
-        # so if feat2 = -1/theta2 * (bias + theta1*feat1)
+        # so if theta2*feat2 = - (bias + theta1*feat1), then
         x2_vals = -(theta[0] + theta[1] * x1_vals) / theta[2]
         ax[plot_idx[i][0], plot_idx[i][1]].plot(
             x1_vals, x2_vals, "k--"
