@@ -137,14 +137,14 @@ def plot_r_difference_vs_time(
         Output filename
     """
 
-    x1 = positions_a[:,:,0]
-    x2 = positions_b[:,:,0]
-    y1 = positions_a[:,:,1]
-    y2 = positions_b[:,:,1]
-    r1 = np.sqrt(x1*x1 + y1*y1)
-    r2 = np.sqrt(x2*x2 + y2*y2)
-    
-    delta_x = (r2 - r1) / np.max(r1) # compute relative difference in radius 
+    x1 = positions_a[:, :, 0]
+    x2 = positions_b[:, :, 0]
+    y1 = positions_a[:, :, 1]
+    y2 = positions_b[:, :, 1]
+    r1 = np.sqrt(x1 * x1 + y1 * y1)
+    r2 = np.sqrt(x2 * x2 + y2 * y2)
+
+    delta_x = (r2 - r1) / np.max(r1)  # compute relative difference in radius
     # note that for this we use the maximum of the radii the object attains with leapfrog.
     # since leapfrog is the more accurate integrator, this sets the typical scale for the object.
     fig, ax = plt.subplots(1, 1, figsize=(12, 5), constrained_layout=True)

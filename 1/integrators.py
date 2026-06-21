@@ -96,30 +96,30 @@ def leapfrog_integrator(
 
     velocities = velocities_init.copy()
     positions = positions_init.copy()
-    
+
     # we first have to kick our velocities to v_i+1/2 from v_i
     # for this we will use RK4 on a step size of 0.5*dt
-    dt = 0.5*dt # set dt to 0.5*dt
-    
-    # first we compute all the k coefficients 
+    dt = 0.5 * dt  # set dt to 0.5*dt
+
+    # first we compute all the k coefficients
     k1_v = dt * compute_accelerations(positions, masses)
     k1_x = dt * velocities
 
-    k2_v = 0.5*dt * compute_accelerations(positions + 0.5*k1_x, masses)
-    k2_x = 0.5*dt * (velocities + 0.5*k1_v)
+    k2_v = 0.5 * dt * compute_accelerations(positions + 0.5 * k1_x, masses)
+    k2_x = 0.5 * dt * (velocities + 0.5 * k1_v)
 
-    k3_v = 0.5*dt * compute_accelerations(positions + 0.5*k2_x, masses)
-    k3_x = 0.5*dt * (velocities + 0.5*k2_v)
+    k3_v = 0.5 * dt * compute_accelerations(positions + 0.5 * k2_x, masses)
+    k3_x = 0.5 * dt * (velocities + 0.5 * k2_v)
 
     k4_v = dt * compute_accelerations(positions + k3_x, masses)
     k4_x = dt * (velocities + k3_v)
 
     # combine coefficients to compute velocities at t + 0.5*dt
-    velocities += (1 / 6) * (k1_v + 2*k2_v + 2*k3_v + k4_v)
+    velocities += (1 / 6) * (k1_v + 2 * k2_v + 2 * k3_v + k4_v)
 
     # set dt = 2*dt (so that it is back to the original dt)
-    dt = 2*dt
-    
+    dt = 2 * dt
+
     for step in range(N_steps):
         positions += dt * velocities  # drift
         accelerations = compute_accelerations(positions, masses)  # acceleration
@@ -178,23 +178,23 @@ def RK4_integrator(
     positions = positions_init.copy()
 
     for step in range(N_steps):
-        # first we compute all the k coefficients 
+        # first we compute all the k coefficients
         k1_v = dt * compute_accelerations(positions, masses)
         k1_x = dt * velocities
 
-        k2_v = 0.5*dt * compute_accelerations(positions + 0.5*k1_x, masses)
-        k2_x = 0.5*dt * (velocities + 0.5*k1_v)
+        k2_v = 0.5 * dt * compute_accelerations(positions + 0.5 * k1_x, masses)
+        k2_x = 0.5 * dt * (velocities + 0.5 * k1_v)
 
-        k3_v = 0.5*dt * compute_accelerations(positions + 0.5*k2_x, masses)
-        k3_x = 0.5*dt * (velocities + 0.5*k2_v)
+        k3_v = 0.5 * dt * compute_accelerations(positions + 0.5 * k2_x, masses)
+        k3_x = 0.5 * dt * (velocities + 0.5 * k2_v)
 
         k4_v = dt * compute_accelerations(positions + k3_x, masses)
         k4_x = dt * (velocities + k3_v)
 
         # combine coefficients to compute velocities and positions at t + dt
-        velocities += (1 / 6) * (k1_v + 2*k2_v + 2*k3_v + k4_v)
-        positions += (1 / 6) * (k1_x + 2*k2_x + 2*k3_x + k4_x)
-        
+        velocities += (1 / 6) * (k1_v + 2 * k2_v + 2 * k3_v + k4_v)
+        positions += (1 / 6) * (k1_x + 2 * k2_x + 2 * k3_x + k4_x)
+
         velocities_list.append(velocities.copy())
         positions_list.append(positions.copy())
 

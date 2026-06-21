@@ -56,7 +56,7 @@ def main() -> None:
 
     # Parameters for the exercise
     total_time = 300.0  # years
-    dt =  0.8 / 365.25  # 0.8 days in years
+    dt = 0.8 / 365.25  # 0.8 days in years
     N_steps = int(total_time / dt)
 
     times = np.arange(N_steps + 1) * dt
@@ -99,9 +99,9 @@ def main() -> None:
         output_dir=output_dir,
         filename="orbits_xy_RK4.png",
     )
-    
+
     plot_orbits_xy(
-        positions=positions_RK4[:,:5,:],
+        positions=positions_RK4[:, :5, :],
         body_names=body_names[:5],
         output_dir=output_dir,
         filename="orbits_xy_RK4_inner.png",
@@ -124,19 +124,19 @@ def main() -> None:
         filename="r_difference_RK4_minus_leapfrog.png",
     )
 
-    # (d): 
-        
+    # (d):
+
     # we must choose our frame_interval such that we do not exceed 30s
     # the total frames is given by the length of positions_lf
     # the total duration of our move is then given by:
     # T = frames / (frame_interval * fps)
     # so frame_interval =  frames / (T*fps)
-    fps = 24 # frames per second
-    T = 20 # seconds
+    fps = 24  # frames per second
+    T = 20  # seconds
     frames = len(positions_lf)
-    
-    frame_interval = frames // (fps*T)
-    
+
+    frame_interval = frames // (fps * T)
+
     movie_path = make_movie_with_matplotlib(
         positions=positions_lf,
         body_names=body_names,

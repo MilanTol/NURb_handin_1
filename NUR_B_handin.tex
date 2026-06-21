@@ -137,11 +137,11 @@ effect is stronger for the bodies closer in, mercury in particular.
 
 We can confirm that they are indeed migrating outwards by looking at Figure \ref{fig:z_vs_time_RK4} 
 and Figure \ref{fig:r_difference_RK4_minus_leapfrog}. In \ref{fig:z_vs_time_RK4} we see that the 
-amplitude of the z_separation oscillation of the terrestrial planets increases over time. Hinting 
+amplitude of the oscillation in the z coordinate of the terrestrial planets increases over time. Hinting 
 at outwards motion. In \ref{fig:r_difference_RK4_minus_leapfrog} we plot the difference in radial distance of 
 bodies of the trajectories computed by RK4 versus leapfrog. We normalize it by the max radius of the trajectories 
 found by using leapfrog. This gives us a better comparison of objects close and further from the sun, to see where the RK4 
-algorithm fails more. 
+algorithm fails. 
 We see that for the terrestrial planets there is a clear trend that the bodies are moving outwards. 
 For the gas planets, there is a suprising amount of deviation as well, but it seems to oscillate around 0.
 Hence there is no substantial amount of energy added for these bodies further out.
@@ -149,19 +149,19 @@ We have checked that decreasing the step-size increases the deviation strongly a
 jupiter starts showing outwards migration as well.
 
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_RK4.png}
-\caption{Orbits of the objects in the x-y plane using a 4th order Runge-Kutta integrator over a period of 300 years.
+    \centering
+    \includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_RK4.png}
+    \caption{Orbits of the objects in the x-y plane using a 4th order Runge-Kutta integrator over a period of 300 years.
     The timestep for the integrator is 0.8 days.}
-\caption{fig:orbits_xy_RK4}
+    \label{fig:orbits_xy_RK4}
 \end{figure}
 
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_RK4_inner.png}
-\caption{Orbits of the inner 4 planets and the sun in the x-y plane using a 4th order Runge-Kutta integrator over a period of 300 years.
+    \centering
+    \includegraphics[width=0.8\textwidth]{\PlotDir/orbits_xy_RK4_inner.png}
+    \caption{Orbits of the inner 4 planets and the sun in the x-y plane using a 4th order Runge-Kutta integrator over a period of 300 years.
     The timestep for the integrator is 0.8 days.}
-\caption{fig:orbits_xy_RK4_inner}
+    \label{fig:orbits_xy_RK4_inner}
 \end{figure}
 
 \begin{figure}[H]
@@ -178,6 +178,7 @@ jupiter starts showing outwards migration as well.
     \caption{Difference in the x positions of the bodies as a function of time between the leapfrog method and another integration method.}
     \label{fig:r_difference_RK4_minus_leapfrog}
 \end{figure}
+
 
 \subsection{(1d)}
 
@@ -206,7 +207,7 @@ For this we first constructed a Node class. This node class stores the following
 
 The octree was then constructed by recursively calling the \textit{build} function. 
 The build function is passed an array of particle indices, particle positions, the center of the current node,
-the index of the current node, the box_size of the current node, depth of the current node, and the desired max depth of the tree.
+the index of the current node, the boxsize of the current node, depth of the current node, and the desired max depth of the tree.
 The build function essentially does the following: It checks whether the current Node 
 contains any particles or whether the max desired depth of the tree is reached. If that is the case, then it 
 returns the current Node without splitting it up into any children. If neither condition is met, the build function 
@@ -218,7 +219,7 @@ all our particles and pass a desired depth.
 
 The mass map at some desired resolution can then be constructed by counting 
 the particles in each node at the level corresponding to the desired resolution.
-More technically: For each pixel in the mass map, we call the get_node_at_level function.
+More technically: For each pixel in the mass map, we call the get-node-at-level function.
 This function traverses the octree and returns the node at a given level and index. 
 The massmap value is then given by the total mass in the node.
 Traversing the octree can be done efficiently since the index of the node has a neat mapping 
@@ -226,27 +227,27 @@ to all the splits of parent nodes necessary to get to the desired child.
 See the comments provided in the get_node_at_level function.
 
 The mass distribution for four slices at different depth levels, namely the first four slices in the x-axis, at levels 3,
-5 and 7, are plotted in figures \ref{Fig: massmap level 3, Fig: massmap level 5, Fig: massmap level 7}.
+5 and 7, are plotted in Figures \ref{fig2a_level3, fig2a_level5, fig2a_level7}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level3.png}
     \caption{Mass distribution for the first four slices in xi at level 3 of the octree.}
-    \label{Fig: massmap level 3}
+    \label{fig2a_level3}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level5.png}
     \caption{Mass distribution for the first four slices in xi at level 5 of the octree.}
-    \label{Fig: massmap level 5}
+    \label{fig2a_level5}
 \end{figure}
     
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\PlotDir/fig2a_level7.png}
     \caption{Mass distribution for the first four slices in xi at level 7 of the octree.}
-    \label{Fig: massmap level 7}
+    \label{fig2a_level7}
 \end{figure}
 
 As expected we see that the lower levels return a lower resolution. The spatial fraction that each node

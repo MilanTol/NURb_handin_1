@@ -101,10 +101,9 @@ def main() -> None:
         plt.savefig(os.path.join(output_dir, f"fig2a_level{level}.png"), dpi=300)
         plt.close()
 
-    
     # Question 2b: using the FFT
 
-    level = 7 # use 7 for final version -> 128 particles along each axis
+    level = 7  # use 7 for final version -> 128 particles along each axis
     Ngrid = np.int64(2**level)
     dx = L / Ngrid
     massgrid = np.zeros((Ngrid, Ngrid, Ngrid), dtype=np.float32)
@@ -118,21 +117,21 @@ def main() -> None:
     densgrid = massgrid / (dx * dx * dx)  # divide out the volume of level 7 cells
 
     # construct the frequencies grid
-    k_grid_1d = fft_frequencies(Ngrid, L) 
+    k_grid_1d = fft_frequencies(Ngrid, L)
     k_grid = np.meshgrid(
         k_grid_1d,
         k_grid_1d,
         k_grid_1d,
     )
     kx, ky, kz = k_grid
-    k2 = kx*kx + ky*ky + kz*kz
-    k2[0,0,0] = np.infty # ignore the first component
-    # Note that this essentially just sets the (0,0,0) component 
-    # of the fourier transform of the potential to 0. 
+    k2 = kx * kx + ky * ky + kz * kz
+    k2[0, 0, 0] = np.infty  # ignore the first component
+    # Note that this essentially just sets the (0,0,0) component
+    # of the fourier transform of the potential to 0.
     # but this is the same as just adding a constant to the potential
     # this is exactly the gauge freedom that potentials give us
     # so it really does not alter any physics.
-    
+
     # fourier transform densgrid in each axis:
     FTdensgrid = fft3d(x=densgrid)
 
@@ -166,7 +165,7 @@ def main() -> None:
         np.arange(Ngrid), np.arange(Ngrid), np.abs(potential[64, :, :])
     )
     ax[1, 1].set(xlabel="y index", title="x index = 64")
-    
+
     # ax[1,1].set(xlabel='...', title='...')
     fig.colorbar(pcm, ax=ax[1, 1], label="-Potential")
     ax[0, 0].set_aspect("equal", "box")
