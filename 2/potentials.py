@@ -32,14 +32,14 @@ def main() -> None:
 
     # Question 2: Calculating potentials
 
-    # with h5py.File("/disks/cosmodm/DMO_a0.1_256.hdf5", "r") as handle:
-    #     pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
-    #     # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
-
     # use this one below for final handin!
-    with h5py.File("Data/DMO_a0.1_256.hdf5", "r") as handle:
+    with h5py.File("/disks/cosmodm/DMO_a0.1_256.hdf5", "r") as handle:
         pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
         # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
+
+    # with h5py.File("Data/DMO_a0.1_256.hdf5", "r") as handle:
+    #     pos = handle["Position"][...]  # particle positions, shape (Np,3), comoving
+    #     # vel=handle["Velocity"][...] #particle velocities, shape (Np,3), comoving <-- not used, but if you're interested
 
     # pos = np.random.uniform(low=0.0, high=L, size=(Np, 3))
 
