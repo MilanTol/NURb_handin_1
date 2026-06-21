@@ -65,7 +65,7 @@ def main() -> None:
         (3,4),
     ]
     learning_rate = 0.2
-    max_iters = 2000
+    max_iters = 3000
     cost_vals, thetas = logistic_regression(
         features, 
         labels,
@@ -81,7 +81,8 @@ def main() -> None:
             label=f"Features {comb}"
         )
 
-    ax.set(xlabel="Number of iterations", ylabel="Cost function")
+    ax.set(xlabel="Number of iterations", ylabel="Cost function", xscale='log')
+    ax.set(xlim=(1, max_iters))
     plt.legend(loc=(1.05, 0))
     plt.savefig(os.path.join(output_dir, "fig3b.png"), dpi=300)
     plt.close()
@@ -111,6 +112,7 @@ def main() -> None:
         feature_columns=all_features[0],
         output_dir=output_dir,
     ) 
+    print("bias and feature values: ", theta_all)
 
     
     # For every pair of features, plot the two features against each other and indicate the decision boundary
